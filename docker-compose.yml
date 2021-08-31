@@ -1,0 +1,64 @@
+version: "3"
+
+networks:
+  backend:
+    driver: ${NETWORKS_DRIVER}
+
+volumes:
+  mysql_data:
+    driver: ${VOLUMES_DRIVER}
+  mysql_log:
+    driver: ${VOLUMES_DRIVER}
+
+services:
+
+  ethereum-client-go:
+    image: ethereum/client-go
+    ports:
+      - 30303:30303
+    networks:
+      - backend
+
+  mysql:
+    build:
+      context: ./mysql/
+    volumes:
+      - mysql_data:/var/lib/mysql-files
+      - mysql_log:/var/log/mysql
+    ports:
+      - 3306:3306
+    platform: linux/amd64
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - TZ=${MYSQL_TIMEZONE}
+    networks:
+      - backend
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "100"
+
+  eth-service:
+    build:
+      context: ./
+      args:
+        - WORKDIR=/etc/eth-service/cmd/server/eth/
+    ports:
+      - ${ETH_SERVICE_SERVER_PORT}:${ETH_SERVICE_SERVER_PORT}
+    command:
+      go run main.go
+        --stderrthreshold ${ETH_SERVICE_LOG_LEVEL}
+        --run_mode ${ETH_SERVICE_RUN_MODE}
+        --gin_mode ${ETH_SERVICE_GIN_MODE}
+        --server_host ${ETH_SERVICE_SERVER_HOST}
+        --server_port ${ETH_SERVICE_SERVER_PORT}
+        --database_host ${ETH_SERVICE_DATABASE_HOST}
+        --database_port ${ETH_SERVICE_DATABASE_PORT}
+        --database_schema ${ETH_SERVICE_DATABASE_SCHEMA}
+        --database_user ${ETH_SERVICE_DATABASE_USER}
+        --database_password ${ETH_SERVICE_DATABASE_PASSWORD}
+        --eth_api_endpoint ${ETH_SERVICE_DATABASE_PASSWORD}
+        --eth_data_seed_url ${ETH_SERVICE_ETH_DATA_SEED_URL}
+    networks:
+      - backend
