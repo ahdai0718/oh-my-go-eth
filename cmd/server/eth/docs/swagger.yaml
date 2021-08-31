@@ -1,0 +1,31 @@
+info:
+  contact: {}
+paths:
+  /api/v1/eth/blocks:
+    get:
+      consumes:
+      - application/json
+      description: get eth block list
+      parameters:
+      - description: return {n} block(s)
+        in: query
+        name: limit
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: bad request
+          schema:
+            type: string
+        "404":
+          description: not found
+          schema:
+            type: string
+      summary: get eth block list
+swagger: "2.0"

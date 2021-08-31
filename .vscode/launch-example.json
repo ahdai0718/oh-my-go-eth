@@ -1,0 +1,35 @@
+{
+    "version": "0.2.0",
+    "compounds": [],
+    "configurations": [
+        {
+            "name": "eth-service",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "cwd": "${workspaceFolder}/cmd/server/eth/",
+            "output": "${workspaceFolder}/cmd/server/eth/__debug_bin_go_eth",
+            "program": "${workspaceFolder}/cmd/server/eth/main.go",
+            "args": [
+                "--stderrthreshold", "INFO",
+                "--run_mode", "dev",
+                "--gin_mode", "debug",
+                "--server_host", "0.0.0.0",
+                "--server_port", "40001",
+                "--database_host", "localhost",
+                "--database_port", "3306",
+                "--database_schema", "eth_service",
+                "--database_user", "root",
+                "--database_password", "!QAZ2wsx",
+                "--eth_data_seed_url", "https://data-seed-prebsc-2-s3.binance.org:8545/",
+            ],
+        },
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "swagger-client",
+            "url": "http://0.0.0.0:40001/swagger/",
+            "webRoot": "${workspaceFolder}"
+          },
+    ]
+}
