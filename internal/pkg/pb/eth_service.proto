@@ -13,4 +13,11 @@ message Block {
 message Transaction {
     string tx_hash = 1;
     string block_hash = 2;
+    repeated TransactionLog logs = 3;
+}
+
+message TransactionLog {
+    int64 index = 1;
+    string tx_hash = 2;
+    string data = 3;
 }

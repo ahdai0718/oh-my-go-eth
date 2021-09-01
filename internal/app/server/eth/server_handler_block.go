@@ -26,18 +26,15 @@ func ServerHandlerBlockList(ctx *gin.Context) {
 
 	dataBlockListWrapper := new(datastruct.BlockListWrapper)
 
-	blockList, err := getLatestNBlock(limit)
+	blockList, err := store.DefaultStorer().GetLatestNBlock(uint(limit))
+
 	if err != nil {
 		glog.Error(err)
 		ctx.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
-	dataBlockListWrapper.Parse(blockList)
-
-	for _, block := range dataBlockListWrapper.List {
-		store.DefaultStorer().AddBlock(&block.Block)
-	}
+	dataBlockListWrapper.ParsePB(blockList)
 
 	ctx.JSON(http.StatusOK, dataBlockListWrapper)
 }
@@ -64,15 +61,21 @@ func ServerHandlerBlock(ctx *gin.Context) {
 		return
 	}
 
-	block, err := getBlockByNumber(number)
+	block, err := store.DefaultStorer().GetBlockByNum(number)
 	if err != nil {
 		glog.Error(err)
-		ctx.AbortWithError(http.StatusBadRequest, err)
+		ctx.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
-	dataBlock := new(datastruct.Block)
-	dataBlock.Parse(block)
+	transactionList, err := store.DefaultStorer().GetTransactionListByBlockHash(block.BlockHash)
+	if err != nil {
+		glog.Error(err)
+		ctx.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
 
-	ctx.JSON(http.StatusOK, dataBlock)
+	block.Transactions = transactionList
+
+	ctx.JSON(http.StatusOK, block)
 }

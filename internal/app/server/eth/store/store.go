@@ -16,6 +16,7 @@ type Storer interface {
 	AddTransaction(pbTransaction *pb.Transaction) (err error)
 	GetTransactionByHash(txHash string) (pbTransaction *pb.Transaction, err error)
 	GetTransactionListByBlockHash(blockHash string) (pbTransactionList []*pb.Transaction, err error)
+	GetTransactionLogListByBlockTxHash(txHash string) (pbTransactionLogList []*pb.TransactionLog, err error)
 }
 
 func DefaultStorer() Storer {

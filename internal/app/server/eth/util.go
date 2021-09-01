@@ -2,8 +2,10 @@ package eth
 
 import (
 	"context"
+	"encoding/hex"
 	"math/big"
 
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/golang/glog"
@@ -62,6 +64,36 @@ func getBlockByNumber(number uint64) (block *types.Block, err error) {
 	return
 }
 
+func getTransactionByHash(txHash string) (err error) {
+
+	client, err := ethclient.Dial(dataSeedURL)
+
+	if err != nil {
+		return
+	}
+
+	hash := common.Hash{}
+	err = hash.UnmarshalText([]byte(txHash))
+	if err != nil {
+		return
+	}
+
+	transaction, _, err := client.TransactionByHash(context.Background(), hash)
+	if err != nil {
+		return
+	}
+
+	receipt, err := client.TransactionReceipt(context.Background(), hash)
+	if err != nil {
+		return
+	}
+
+	printTransactionInfo(transaction)
+	printReceiptInfo(receipt)
+
+	return
+}
+
 func printBlockInfo(block *types.Block) {
 	if block == nil {
 		glog.Warning("block is nil")
@@ -79,6 +111,55 @@ func printBlockInfo(block *types.Block) {
 
 	glog.Infof("====Transactions[%d]====", len(block.Transactions()))
 	for _, transaction := range block.Transactions() {
-		glog.Infof("====Transaction [%s]====", transaction.Hash().Hex())
+		printTransactionInfo(transaction)
 	}
+}
+
+func printTransactionInfo(transaction *types.Transaction) {
+	if transaction == nil {
+		glog.Warning("transaction is nil")
+		return
+	}
+
+	message, err := transaction.AsMessage(types.NewEIP155Signer(transaction.ChainId()), nil)
+	if err != nil {
+		glog.Error(err)
+		return
+	}
+
+	glog.Infoln("====Transaction====")
+	glog.Infof("Hash:%s", transaction.Hash().Hex())
+	glog.Infof("From:%s", message.From().Hex())
+	if message.To() != nil {
+		glog.Infof("To:%s", message.To().Hex())
+	}
+	glog.Infof("Nonce:%d", transaction.Nonce())
+	glog.Infof("Value:%d", transaction.Value().Uint64())
+}
+
+func printReceiptInfo(receipt *types.Receipt) {
+	if receipt == nil {
+		glog.Warning("receipt is nil")
+		return
+	}
+
+	glog.Infof("==== Receipt ====")
+
+	for _, log := range receipt.Logs {
+		printLogInfo(log)
+	}
+}
+
+func printLogInfo(log *types.Log) {
+	if log == nil {
+		glog.Warning("log is nil")
+		return
+	}
+
+	glog.Infof("==== Log ====")
+	glog.Infof("Index:%d", log.Index)
+	glog.Infof("Data:%s", hex.EncodeToString(log.Data))
+	glog.Infof("TxHash:%s", log.TxHash.Hex())
+	glog.Infof("TxIndex:%d", log.TxIndex)
+
 }

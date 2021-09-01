@@ -57,6 +57,26 @@ func (m *Transaction) ToPB() (pbTransaction *pb.Transaction) {
 	return
 }
 
+type TransactionLog struct {
+	Index  int64  `gorm:"primaryKey"`
+	TxHash string `gorm:"primaryKey"`
+	Data   string
+}
+
+func (m TransactionLog) TableName() string {
+	return "transaction_log"
+}
+
+func (m *TransactionLog) Parse(t *pb.TransactionLog) {
+	copier.Copy(m, t)
+}
+
+func (m *TransactionLog) ToPB() (pbTransactionLog *pb.TransactionLog) {
+	pbTransactionLog = new(pb.TransactionLog)
+	copier.Copy(pbTransactionLog, m)
+	return
+}
+
 type StorerMySQL struct {
 	db *gorm.DB
 }
@@ -112,7 +132,13 @@ func (storer *StorerMySQL) GetBlockByNum(blockNumber uint64) (pbBlock *pb.Block,
 	block.BlockNum = blockNumber
 
 	err = storer.db.Take(block).Error
-	if err != nil {
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return
+	}
+
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		err = nil
+		pbBlock = new(pb.Block)
 		return
 	}
 
@@ -126,7 +152,13 @@ func (storer *StorerMySQL) GetBlockByHash(blockHash string) (pbBlock *pb.Block, 
 	block.BlockHash = blockHash
 
 	err = storer.db.Take(block).Error
-	if err != nil {
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return
+	}
+
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		err = nil
+		pbBlock = new(pb.Block)
 		return
 	}
 
@@ -135,16 +167,21 @@ func (storer *StorerMySQL) GetBlockByHash(blockHash string) (pbBlock *pb.Block, 
 }
 
 func (storer *StorerMySQL) GetLatestNBlock(n uint) (pbBlockList []*pb.Block, err error) {
-	pbBlockList = make([]*pb.Block, n)
-	blockList := make([]*Block, n)
+	blockList := make([]*Block, 0)
+	pbBlockList = make([]*pb.Block, 0)
 
-	err = storer.db.Order("block_num DESC").Limit(int(n)).Find(blockList).Error
-	if err != nil {
+	err = storer.db.Model(&Block{}).Order("block_num DESC").Limit(int(n)).Find(&blockList).Error
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return
 	}
 
-	for index, block := range blockList {
-		pbBlockList[index] = block.ToPB()
+	err = nil
+
+	if len(blockList) > 0 {
+		pbBlockList = make([]*pb.Block, len(blockList))
+		for index, block := range blockList {
+			pbBlockList[index] = block.ToPB()
+		}
 	}
 
 	return
@@ -162,7 +199,13 @@ func (storer *StorerMySQL) GetTransactionByHash(txHash string) (pbTransaction *p
 	transaction.TxHash = txHash
 
 	err = storer.db.Take(transaction).Error
-	if err != nil {
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return
+	}
+
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		err = nil
+		pbTransaction = new(pb.Transaction)
 		return
 	}
 
@@ -175,15 +218,39 @@ func (storer *StorerMySQL) GetTransactionListByBlockHash(blockHash string) (pbTr
 	transctionList := make([]*Transaction, 0)
 
 	err = storer.db.Where("block_hash = ?", blockHash).Find(&transctionList).Error
-	if err != nil {
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return
 	}
+
+	err = nil
 
 	if len(transctionList) > 0 {
 		pbTransactionList = make([]*pb.Transaction, len(transctionList))
 		for index, transction := range transctionList {
 			pbTransaction := transction.ToPB()
 			pbTransactionList[index] = pbTransaction
+		}
+	}
+
+	return
+}
+
+func (storer *StorerMySQL) GetTransactionLogListByBlockTxHash(txHash string) (pbTransactionLogList []*pb.TransactionLog, err error) {
+
+	transctionLogList := make([]*TransactionLog, 0)
+
+	err = storer.db.Where("tx_hash = ?", txHash).Find(&transctionLogList).Error
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return
+	}
+
+	err = nil
+
+	if len(transctionLogList) > 0 {
+		pbTransactionLogList = make([]*pb.TransactionLog, len(transctionLogList))
+		for index, transctionLog := range transctionLogList {
+			pbTransactionLog := transctionLog.ToPB()
+			pbTransactionLogList[index] = pbTransactionLog
 		}
 	}
 

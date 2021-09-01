@@ -15,8 +15,6 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
-USE `eth_service`;
-
 --
 -- Table structure for table `block`
 --
@@ -35,15 +33,6 @@ CREATE TABLE `block` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `block`
---
-
-LOCK TABLES `block` WRITE;
-/*!40000 ALTER TABLE `block` DISABLE KEYS */;
-/*!40000 ALTER TABLE `block` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `transaction`
 --
 
@@ -59,13 +48,20 @@ CREATE TABLE `transaction` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `transaction`
+-- Table structure for table `transaction_log`
 --
 
-LOCK TABLES `transaction` WRITE;
-/*!40000 ALTER TABLE `transaction` DISABLE KEYS */;
-/*!40000 ALTER TABLE `transaction` ENABLE KEYS */;
-UNLOCK TABLES;
+DROP TABLE IF EXISTS `transaction_log`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `transaction_log` (
+  `index` int NOT NULL,
+  `tx_hash` char(66) NOT NULL,
+  `data` varchar(128) NOT NULL,
+  PRIMARY KEY (`index`,`tx_hash`),
+  KEY `tx_hash` (`tx_hash`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -76,4 +72,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-09-01  9:36:48
+-- Dump completed on 2021-09-01 20:23:44

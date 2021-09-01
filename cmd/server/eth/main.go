@@ -79,7 +79,7 @@ func main() {
 			transactionGroup := ethGroup.Group("/transaction")
 			transactionGroup.Use()
 			{
-				transactionGroup.GET("/:txHash", eth.ServerHandlerTransaction)
+				transactionGroup.GET("/:tx_hash", eth.ServerHandlerTransaction)
 			}
 		}
 	}
@@ -95,8 +95,6 @@ func main() {
 		WriteTimeout:   3 * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
-
-	glog.Info(server)
 
 	err := server.ListenAndServe()
 	glog.Error(err)

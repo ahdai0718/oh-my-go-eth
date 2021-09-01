@@ -21,12 +21,21 @@ import (
 func ServerHandlerTransaction(ctx *gin.Context) {
 	txHash := ctx.Param("tx_hash")
 
-	pbTransaction, err := store.DefaultStorer().GetTransactionByHash(txHash)
+	transaction, err := store.DefaultStorer().GetTransactionByHash(txHash)
 	if err != nil {
 		glog.Error(err)
-		ctx.AbortWithError(http.StatusBadRequest, err)
+		ctx.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, pbTransaction)
+	transactionLogList, err := store.DefaultStorer().GetTransactionLogListByBlockTxHash(transaction.TxHash)
+	if err != nil {
+		glog.Error(err)
+		ctx.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	transaction.Logs = transactionLogList
+
+	ctx.JSON(http.StatusOK, transaction)
 }

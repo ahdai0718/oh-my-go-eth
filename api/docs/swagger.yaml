@@ -5,7 +5,6 @@ paths:
     get:
       consumes:
       - application/json
-      description: get eth block list
       parameters:
       - description: return {n} block(s)
         in: query
@@ -32,9 +31,8 @@ paths:
     get:
       consumes:
       - application/json
-      description: get eth block list
       parameters:
-      - description: return single block number equal
+      - description: the eth block id
         in: path
         name: id
         required: true
@@ -54,5 +52,31 @@ paths:
           description: not found
           schema:
             type: string
-      summary: get eth block with id
+      summary: get single eth block with specific id
+  /api/v1/eth/transaction/{tx_hash}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: eth transaction hash
+        in: path
+        name: tx_hash
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: bad request
+          schema:
+            type: string
+        "404":
+          description: not found
+          schema:
+            type: string
+      summary: get single eth transaction with hash
 swagger: "2.0"

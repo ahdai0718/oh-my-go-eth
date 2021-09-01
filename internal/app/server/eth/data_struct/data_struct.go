@@ -17,17 +17,31 @@ func (wrapper *BlockListWrapper) Parse(blockList []*types.Block) {
 
 	wrapper.List = make(BlockList, len(blockList))
 
-	for index, block := range blockList {
-		Block := new(Block)
-		Block.Parse(block)
-		wrapper.List[index] = Block
+	for index, b := range blockList {
+		block := new(Block)
+		block.Parse(b)
+		wrapper.List[index] = block
+	}
+}
+
+func (wrapper *BlockListWrapper) ParsePB(blockList []*pb.Block) {
+	if len(blockList) < 1 {
+		return
+	}
+
+	wrapper.List = make(BlockList, len(blockList))
+
+	for index, b := range blockList {
+		block := new(Block)
+		block.Block = b
+		wrapper.List[index] = block
 	}
 }
 
 type BlockList []*Block
 
 type Block struct {
-	pb.Block
+	*pb.Block
 }
 
 func (b *Block) Parse(block *types.Block) {
