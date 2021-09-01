@@ -1,26 +1,32 @@
 package eth
 
 import (
-	"context"
 	"net/http"
 
-	"github.com/ethereum/go-ethereum/ethclient"
+	"github.com/ahdai0718/oh-my-go-eth/internal/app/server/eth/store"
 	"github.com/gin-gonic/gin"
 	"github.com/golang/glog"
 )
 
+//
+// @Summary get single eth transaction with hash
+// @Description
+// @Accept	json
+// @Param	tx_hash		path    	string		true	"eth transaction hash"
+// @Produce	json
+// @Success 200 		{string} 	string	"ok"
+// @Failure 400 		{string} 	string	"bad request"
+// @Failure 404 		{string} 	string	"not found"
+// @Router /api/v1/eth/transaction/{tx_hash} [get]
 func ServerHandlerTransaction(ctx *gin.Context) {
-	client, err := ethclient.Dial(dataSeedURL)
+	txHash := ctx.Param("tx_hash")
+
+	pbTransaction, err := store.DefaultStorer().GetTransactionByHash(txHash)
 	if err != nil {
-		ctx.AbortWithError(http.StatusInternalServerError, err)
+		glog.Error(err)
+		ctx.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
-	block, err := client.BlockByNumber(context.Background(), nil)
-	if err != nil {
-		ctx.AbortWithError(http.StatusInternalServerError, err)
-		return
-	}
-
-	glog.Info(block)
+	ctx.JSON(http.StatusOK, pbTransaction)
 }
