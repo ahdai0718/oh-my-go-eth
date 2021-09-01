@@ -63,6 +63,47 @@ var doc = `{
                     }
                 }
             }
+        },
+        "/api/v1/eth/blocks/{id}": {
+            "get": {
+                "description": "get eth block list",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "get eth block with id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "return single block number equal",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "bad request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
         }
     }
 }`

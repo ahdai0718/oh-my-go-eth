@@ -28,4 +28,31 @@ paths:
           schema:
             type: string
       summary: get eth block list
+  /api/v1/eth/blocks/{id}:
+    get:
+      consumes:
+      - application/json
+      description: get eth block list
+      parameters:
+      - description: return single block number equal
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: bad request
+          schema:
+            type: string
+        "404":
+          description: not found
+          schema:
+            type: string
+      summary: get eth block with id
 swagger: "2.0"

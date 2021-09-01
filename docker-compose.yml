@@ -21,7 +21,7 @@ services:
 
   mysql:
     build:
-      context: ./mysql/
+      context: ./deploy/mysql/
     volumes:
       - mysql_data:/var/lib/mysql-files
       - mysql_log:/var/log/mysql
