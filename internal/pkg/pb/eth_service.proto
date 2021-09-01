@@ -1,0 +1,16 @@
+syntax = "proto3";
+option go_package = "github.com/ahdai0718/oh-my-go-eth/internal/pkg/pb";
+package pb;
+
+message Block {
+    int64 block_num = 1;
+    string block_hash = 2;
+    int64 block_time = 3;
+    string parent_hash = 4;
+    repeated Transaction transactions = 5;
+}
+
+message Transaction {
+    string tx_hash = 1;
+    string block_hash = 2;
+}
