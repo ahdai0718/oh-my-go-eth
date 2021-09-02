@@ -13,7 +13,7 @@ func Init() {
 }
 
 func Run() {
-
+	go scanBlockLoop(0, 20)
 }
 
 func SetDataSeedURL(url string) {

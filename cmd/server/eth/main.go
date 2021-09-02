@@ -43,6 +43,7 @@ func main() {
 	viper.BindPFlags(pflag.CommandLine)
 
 	eth.Init()
+	eth.Run()
 
 	serverHost := viper.GetString("server_host")
 	serverPort := viper.GetInt("server_port")
