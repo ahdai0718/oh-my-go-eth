@@ -43,8 +43,6 @@ func main() {
 	viper.BindPFlags(pflag.CommandLine)
 
 	eth.Init()
-	eth.SetDataSeedURL(viper.GetString("eth_data_seed_url"))
-	eth.Run()
 
 	serverHost := viper.GetString("server_host")
 	serverPort := viper.GetInt("server_port")

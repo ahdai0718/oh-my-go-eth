@@ -40,11 +40,37 @@ services:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
     networks:
       - backend
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "100"
+
+  redis:
+    build:
+      context: ./deploy/redis/
+    ports:
+      - 6379:6379
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+
+  eth-scanner:
+    build:
+      context: ./
+      args:
+        - WORKDIR=/etc/eth-service/cmd/scanner/
+    depends_on:
+      - ethereum-node
+      - mysql
+    ports:
+      - ${ETH_SERVICE_SERVER_PORT}:${ETH_SERVICE_SERVER_PORT}
+    command:
+      go run main.go
+        --stderrthreshold ${ETH_SERVICE_LOG_LEVEL}
+        --run_mode ${ETH_SERVICE_RUN_MODE}
+        --database_host ${ETH_SERVICE_DATABASE_HOST}
+        --database_port ${ETH_SERVICE_DATABASE_PORT}
+        --database_schema ${ETH_SERVICE_DATABASE_SCHEMA}
+        --database_username ${ETH_SERVICE_DATABASE_USERNAME}
+        --database_password ${ETH_SERVICE_DATABASE_PASSWORD}
+        --eth_data_seed_url ${ETH_SERVICE_ETH_DATA_SEED_URL}
+    networks:
+      - backend
 
   eth-service:
     build:
@@ -54,6 +80,8 @@ services:
     depends_on:
       - ethereum-node
       - mysql
+      - redis
+      - eth-scanner
     ports:
       - ${ETH_SERVICE_SERVER_PORT}:${ETH_SERVICE_SERVER_PORT}
     command:
