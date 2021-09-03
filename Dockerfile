@@ -8,6 +8,8 @@ WORKDIR /etc/eth-service
 
 COPY ./cmd ./cmd
 
+COPY ./api ./api
+
 COPY ./internal ./internal
 
 COPY ./go.mod ./

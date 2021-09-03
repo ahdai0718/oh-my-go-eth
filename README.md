@@ -26,13 +26,20 @@ My first Go ETH service.
 
   - Run
     ```
+    // environment variables for docker
     cp env-example .env
+
+    // up service
     docker compose up eth-service
     ```
 
 ## What you got
 
-- Swagger API Explorer
+- Ethereum node
+
+  - RPC endpoint `http://localhost:8545`
+
+- Swagger APIs Explorer With 3 APIs
 
   - Default url [http://localhost:40001/swagger/index.html](http://localhost:40001/swagger/index.html)
 

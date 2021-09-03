@@ -18,11 +18,13 @@ func getLatestNBlock(n int) (blockList []*types.Block, err error) {
 	client, err := ethclient.Dial(dataSeedURL)
 
 	if err != nil {
+		glog.Error(err)
 		return
 	}
 
 	block, err := client.BlockByNumber(context.Background(), nil)
 	if err != nil {
+		glog.Error(err)
 		return
 	}
 
