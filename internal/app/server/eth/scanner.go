@@ -6,6 +6,7 @@ import (
 	"time"
 
 	datastruct "github.com/ahdai0718/oh-my-go-eth/internal/app/server/eth/data_struct"
+	"github.com/ahdai0718/oh-my-go-eth/internal/app/server/eth/store"
 	"github.com/ahdai0718/oh-my-go-eth/internal/pkg/pb"
 	"github.com/golang/glog"
 )
@@ -40,6 +41,7 @@ func scanNBlock(startNumber uint64, limit uint) (nextNumber uint64) {
 			block.Block = new(pb.Block)
 			if ethBlock != nil {
 				block.Parse(ethBlock)
+				store.DefaultStorer().AddBlock(block.Block)
 			}
 
 			blockChan <- block
@@ -53,6 +55,7 @@ func scanNBlock(startNumber uint64, limit uint) (nextNumber uint64) {
 	for block := range blockChan {
 		nextNumber = uint64(math.Max(float64(nextNumber), float64(block.BlockNum)))
 	}
+	nextNumber = nextNumber + 1
 
 	return
 }
