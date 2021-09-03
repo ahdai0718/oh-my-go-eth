@@ -25,7 +25,6 @@ var doc = `{
     "paths": {
         "/api/v1/eth/blocks": {
             "get": {
-                "description": "get eth block list",
                 "consumes": [
                     "application/json"
                 ],
@@ -39,6 +38,86 @@ var doc = `{
                         "description": "return {n} block(s)",
                         "name": "limit",
                         "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "bad request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/eth/blocks/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "get single eth block with specific id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "the eth block id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "ok",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "bad request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "404": {
+                        "description": "not found",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/eth/transaction/{tx_hash}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "get single eth transaction with hash",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "eth transaction hash",
+                        "name": "tx_hash",
+                        "in": "path",
                         "required": true
                     }
                 ],

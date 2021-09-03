@@ -26,7 +26,7 @@ var _ = flag.String("server_port", "40001", "Server host port")
 var _ = flag.String("database_host", "", "Database host")
 var _ = flag.String("database_port", "", "Database port")
 var _ = flag.String("database_schema", "", "Database schema")
-var _ = flag.String("database_user", "", "Database user")
+var _ = flag.String("database_username", "", "Database username")
 var _ = flag.String("database_password", "", "Database password")
 
 var _ = flag.String("eth_data_seed_url", "https://data-seed-prebsc-2-s3.binance.org:8545/", "ETH API endpoint")
@@ -41,6 +41,9 @@ func main() {
 	pflag.CommandLine.AddGoFlagSet(flag.CommandLine)
 	pflag.Parse()
 	viper.BindPFlags(pflag.CommandLine)
+
+	eth.Init()
+	eth.Run()
 
 	serverHost := viper.GetString("server_host")
 	serverPort := viper.GetInt("server_port")
@@ -77,12 +80,12 @@ func main() {
 			transactionGroup := ethGroup.Group("/transaction")
 			transactionGroup.Use()
 			{
-				transactionGroup.GET("/:txHash", eth.ServerHandlerTransaction)
+				transactionGroup.GET("/:tx_hash", eth.ServerHandlerTransaction)
 			}
 		}
 	}
 
-	router.Use(static.Serve("/swagger-static", static.LocalFile("./docs", true)))
+	router.Use(static.Serve("/swagger-static", static.LocalFile("../../../api/docs", true)))
 	url := ginSwagger.URL(fmt.Sprintf("http://%s:%d/swagger-static/swagger.json", serverHost, serverPort))
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
 
@@ -93,8 +96,6 @@ func main() {
 		WriteTimeout:   3 * time.Second,
 		MaxHeaderBytes: 1 << 20,
 	}
-
-	glog.Info(server)
 
 	err := server.ListenAndServe()
 	glog.Error(err)
