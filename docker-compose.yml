@@ -12,12 +12,20 @@ volumes:
 
 services:
 
-  ethereum-client-go:
+  ethereum-node:
     image: ethereum/client-go
     ports:
       - 30303:30303
+      - 30303:30303/udp
+      - 8545:8545
     networks:
       - backend
+    command:
+      --http
+      --http.addr 0.0.0.0
+      --ws
+      --ws.addr 0.0.0.0
+      --rpcvhosts=*
 
   mysql:
     build:
@@ -30,7 +38,6 @@ services:
     platform: linux/amd64
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-      - TZ=${MYSQL_TIMEZONE}
     networks:
       - backend
     logging:
@@ -45,6 +52,7 @@ services:
       args:
         - WORKDIR=/etc/eth-service/cmd/server/eth/
     depends_on:
+      - ethereum-node
       - mysql
     ports:
       - ${ETH_SERVICE_SERVER_PORT}:${ETH_SERVICE_SERVER_PORT}
