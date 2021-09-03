@@ -43,6 +43,7 @@ func main() {
 	viper.BindPFlags(pflag.CommandLine)
 
 	eth.Init()
+	eth.SetDataSeedURL(viper.GetString("eth_data_seed_url"))
 	eth.Run()
 
 	serverHost := viper.GetString("server_host")
@@ -51,8 +52,6 @@ func main() {
 	glog.Info(viper.AllSettings())
 
 	gin.SetMode(viper.GetString("gin_mode"))
-
-	eth.SetDataSeedURL(viper.GetString("eth_data_seed_url"))
 
 	router := gin.Default()
 
