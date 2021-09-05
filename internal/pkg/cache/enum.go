@@ -7,8 +7,4 @@ const (
 	_ Type = iota
 	// Redis .
 	Redis
-	// RedisCluster .
-	RedisCluster
-	// Memcached .
-	Memcached
 )

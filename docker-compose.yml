@@ -29,7 +29,7 @@ services:
 
   mysql:
     build:
-      context: ./deploy/mysql/
+      context: ./deployments/mysql/
     volumes:
       - mysql_data:/var/lib/mysql-files
       - mysql_log:/var/log/mysql
@@ -43,7 +43,7 @@ services:
 
   redis:
     build:
-      context: ./deploy/redis/
+      context: ./deployments/redis/
     ports:
       - 6379:6379
     environment:
@@ -78,10 +78,8 @@ services:
       args:
         - WORKDIR=/etc/eth-service/cmd/server/eth/
     depends_on:
-      - ethereum-node
       - mysql
       - redis
-      - eth-scanner
     ports:
       - ${ETH_SERVICE_SERVER_PORT}:${ETH_SERVICE_SERVER_PORT}
     command:

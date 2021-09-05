@@ -1,11 +1,11 @@
-package eth
+package service
 
 import (
 	"net/http"
 	"strconv"
 
-	datastruct "github.com/ahdai0718/oh-my-go-eth/internal/app/server/eth/data_struct"
-	"github.com/ahdai0718/oh-my-go-eth/internal/app/server/eth/store"
+	datastruct "github.com/ahdai0718/oh-my-go-eth/internal/pkg/data_struct"
+	"github.com/ahdai0718/oh-my-go-eth/internal/pkg/store"
 	"github.com/gin-gonic/gin"
 	"github.com/golang/glog"
 )

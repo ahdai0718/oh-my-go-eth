@@ -2,8 +2,12 @@ package store
 
 import "github.com/ahdai0718/oh-my-go-eth/internal/pkg/pb"
 
+const (
+	RetryLimit = 60
+)
+
 var (
-	defaultStorer = defaultSimpleFactory.Create(StoreTypeMySQL)
+	defaultStorer Storer
 )
 
 type Storer interface {
@@ -17,8 +21,15 @@ type Storer interface {
 	GetTransactionByHash(txHash string) (pbTransaction *pb.Transaction, err error)
 	GetTransactionListByBlockHash(blockHash string) (pbTransactionList []*pb.Transaction, err error)
 	GetTransactionLogListByBlockTxHash(txHash string) (pbTransactionLogList []*pb.TransactionLog, err error)
+	AddTransactionLog(pbTransactionLog *pb.TransactionLog) (err error)
 }
 
 func DefaultStorer() Storer {
 	return defaultStorer
+}
+
+func Init(t StoreType) (err error) {
+	defaultStorer = defaultSimpleFactory.Create(t)
+	err = defaultStorer.Init()
+	return
 }

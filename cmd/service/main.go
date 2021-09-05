@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/ahdai0718/oh-my-go-eth/internal/app/server/eth"
+	"github.com/ahdai0718/oh-my-go-eth/internal/app/service"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
@@ -20,16 +20,19 @@ import (
 var _ = flag.String("run_mode", "release", "Game server run mode (dev|debug|release|test)")
 var _ = flag.String("gin_mode", "release", "Gin http server run mode (debug|release|test)")
 
-var _ = flag.String("server_host", "0.0.0.0", "Server host")
+var _ = flag.String("server_host", "localhost", "Server host")
 var _ = flag.String("server_port", "40001", "Server host port")
 
-var _ = flag.String("database_host", "", "Database host")
-var _ = flag.String("database_port", "", "Database port")
-var _ = flag.String("database_schema", "", "Database schema")
-var _ = flag.String("database_username", "", "Database username")
-var _ = flag.String("database_password", "", "Database password")
+var _ = flag.String("database_host", "localhost", "Database host")
+var _ = flag.String("database_port", "3306", "Database port")
+var _ = flag.String("database_schema", "eth_service", "Database schema")
+var _ = flag.String("database_username", "root", "Database username")
+var _ = flag.String("database_password", "!QAZ2wsx", "Database password")
 
-var _ = flag.String("eth_data_seed_url", "https://data-seed-prebsc-2-s3.binance.org:8545/", "ETH API endpoint")
+var _ = flag.String("redis_host", "localhost", "Redis host")
+var _ = flag.String("redis_port", "6379", "Redis host")
+
+var _ = flag.String("eth_data_seed_url", "https://localhost:8545/", "ETH API endpoint")
 
 // @title ETH Service API
 // @version 1.0
@@ -42,7 +45,7 @@ func main() {
 	pflag.Parse()
 	viper.BindPFlags(pflag.CommandLine)
 
-	eth.Init()
+	service.Init()
 
 	serverHost := viper.GetString("server_host")
 	serverPort := viper.GetInt("server_port")
@@ -70,14 +73,14 @@ func main() {
 			blockGroup := ethGroup.Group("/blocks")
 			blockGroup.Use()
 			{
-				blockGroup.GET("", eth.ServerHandlerBlockList)
-				blockGroup.GET("/:id", eth.ServerHandlerBlock)
+				blockGroup.GET("", service.ServerHandlerBlockList)
+				blockGroup.GET("/:id", service.ServerHandlerBlock)
 			}
 
 			transactionGroup := ethGroup.Group("/transaction")
 			transactionGroup.Use()
 			{
-				transactionGroup.GET("/:tx_hash", eth.ServerHandlerTransaction)
+				transactionGroup.GET("/:tx_hash", service.ServerHandlerTransaction)
 			}
 		}
 	}

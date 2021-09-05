@@ -51,7 +51,7 @@ My first Go ETH service.
 
 - MySQL schema
 
-  - [eth_service.sql](https://github.com/ahdai0718/oh-my-go-eth/blob/master/deploy/mysql/sql/eth_service.sql)
+  - [eth_service.sql](https://github.com/ahdai0718/oh-my-go-eth/blob/master/deployments/mysql/sql/eth_service.sql)
 
 
 ## Todos

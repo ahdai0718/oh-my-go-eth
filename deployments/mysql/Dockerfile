@@ -2,7 +2,7 @@ FROM mysql:8
 
 COPY ./sql/*.sql /docker-entrypoint-initdb.d/
 
-COPY ./mysqld.cnf /etc/mysql/conf.d/
+# COPY ./mysqld.cnf /etc/mysql/conf.d/
 
 RUN mkdir -p /var/log/mysql/
 

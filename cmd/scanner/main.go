@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 
-	"github.com/ahdai0718/oh-my-go-eth/internal/app/server/eth"
+	"github.com/ahdai0718/oh-my-go-eth/internal/app/scanner"
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
@@ -15,6 +15,9 @@ var _ = flag.String("database_port", "", "Database port")
 var _ = flag.String("database_schema", "", "Database schema")
 var _ = flag.String("database_username", "", "Database username")
 var _ = flag.String("database_password", "", "Database password")
+
+var _ = flag.String("redis_host", "localhost", "Redis host")
+var _ = flag.String("redis_port", "6379", "Redis host")
 
 var _ = flag.String("eth_data_seed_url", "https://data-seed-prebsc-2-s3.binance.org:8545/", "ETH API endpoint")
 
@@ -28,10 +31,9 @@ func main() {
 	pflag.Parse()
 	viper.BindPFlags(pflag.CommandLine)
 
-	eth.Init()
-	eth.SetDataSeedURL(viper.GetString("eth_data_seed_url"))
-	eth.SetScanLimit(ScanLimit)
-	eth.Scan()
+	scanner.Init(viper.GetString("eth_data_seed_url"))
+	scanner.SetScanLimit(ScanLimit)
+	scanner.Scan()
 
 	for {
 		select {}

@@ -44,6 +44,11 @@ DROP TABLE IF EXISTS `transaction`;
 CREATE TABLE `transaction` (
   `tx_hash` char(66) NOT NULL,
   `block_hash` char(66) NOT NULL,
+  `from` char(66),
+  `to`char(66),
+  `nonce` bigint NULL,
+  `data` text NULL,
+  `value` bigint NULL,
   PRIMARY KEY (`tx_hash`),
   KEY `block_hash` (`block_hash`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

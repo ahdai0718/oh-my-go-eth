@@ -11,16 +11,17 @@ import (
 	"github.com/golang/glog"
 )
 
-func getLatestNBlock(n int) (blockList []*types.Block, err error) {
+var (
+	client *ethclient.Client
+)
 
+func Init(dataSeedURL string) (err error) {
+	client, err = ethclient.Dial(dataSeedURL)
+	return
+}
+
+func GetLatestNBlock(n int) (blockList []*types.Block, err error) {
 	blockList = make([]*types.Block, 0)
-
-	client, err := ethclient.Dial(dataSeedURL)
-
-	if err != nil {
-		glog.Error(err)
-		return
-	}
 
 	block, err := client.BlockByNumber(context.Background(), nil)
 	if err != nil {
@@ -48,14 +49,7 @@ func getLatestNBlock(n int) (blockList []*types.Block, err error) {
 	return
 }
 
-func getBlockByNumber(number uint64) (block *types.Block, err error) {
-
-	client, err := ethclient.Dial(dataSeedURL)
-
-	if err != nil {
-		return
-	}
-
+func GetBlockByNumber(number uint64) (block *types.Block, err error) {
 	block, err = client.BlockByNumber(context.Background(), big.NewInt(int64(number)))
 	if err != nil {
 		return
@@ -66,31 +60,35 @@ func getBlockByNumber(number uint64) (block *types.Block, err error) {
 	return
 }
 
-func getTransactionByHash(txHash string) (err error) {
-
-	client, err := ethclient.Dial(dataSeedURL)
-
-	if err != nil {
-		return
-	}
-
+func GetTransactionByHash(txHash string) (transaction *types.Transaction, err error) {
 	hash := common.Hash{}
 	err = hash.UnmarshalText([]byte(txHash))
 	if err != nil {
 		return
 	}
 
-	transaction, _, err := client.TransactionByHash(context.Background(), hash)
-	if err != nil {
-		return
-	}
-
-	receipt, err := client.TransactionReceipt(context.Background(), hash)
+	transaction, _, err = client.TransactionByHash(context.Background(), hash)
 	if err != nil {
 		return
 	}
 
 	printTransactionInfo(transaction)
+
+	return
+}
+
+func GetTransactionReceiptByHash(txHash string) (receipt *types.Receipt, err error) {
+	hash := common.Hash{}
+	err = hash.UnmarshalText([]byte(txHash))
+	if err != nil {
+		return
+	}
+
+	receipt, err = client.TransactionReceipt(context.Background(), hash)
+	if err != nil {
+		return
+	}
+
 	printReceiptInfo(receipt)
 
 	return

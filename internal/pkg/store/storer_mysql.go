@@ -13,10 +13,6 @@ import (
 	"gorm.io/gorm"
 )
 
-var (
-	defaultSimpleFactory = &SimpleFactory{}
-)
-
 type Block struct {
 	BlockNum   uint64
 	BlockHash  string `gorm:"primaryKey"`
@@ -41,6 +37,11 @@ func (m *Block) ToPB() (pbBlock *pb.Block) {
 type Transaction struct {
 	TxHash    string `gorm:"primaryKey"`
 	BlockHash string
+	From      string
+	To        string
+	Nonce     int64
+	Data      string
+	Value     int64
 }
 
 func (m Transaction) TableName() string {
@@ -99,7 +100,7 @@ func (storer *StorerMySQL) Init() (err error) {
 		glog.Errorln(err)
 
 		for err != nil {
-			if retry >= 60 {
+			if retry >= RetryLimit {
 				return errors.New("over retry to connect to database")
 			}
 			retry++
@@ -131,7 +132,7 @@ func (storer *StorerMySQL) GetBlockByNum(blockNumber uint64) (pbBlock *pb.Block,
 	block := new(Block)
 	block.BlockNum = blockNumber
 
-	err = storer.db.Take(block).Error
+	err = storer.db.First(block, "block_num=?", blockNumber).Error
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return
 	}
@@ -151,7 +152,7 @@ func (storer *StorerMySQL) GetBlockByHash(blockHash string) (pbBlock *pb.Block, 
 	block := new(Block)
 	block.BlockHash = blockHash
 
-	err = storer.db.Take(block).Error
+	err = storer.db.First(block, "block_hash=?", blockHash).Error
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return
 	}
@@ -232,6 +233,13 @@ func (storer *StorerMySQL) GetTransactionListByBlockHash(blockHash string) (pbTr
 		}
 	}
 
+	return
+}
+
+func (storer *StorerMySQL) AddTransactionLog(pbTransactionLog *pb.TransactionLog) (err error) {
+	transactionLog := new(TransactionLog)
+	transactionLog.Parse(pbTransactionLog)
+	err = storer.db.Create(transactionLog).Error
 	return
 }
 

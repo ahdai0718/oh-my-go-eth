@@ -2,9 +2,13 @@ package cache
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"time"
 
 	"github.com/go-redis/redis/v8"
+	"github.com/golang/glog"
+	"github.com/spf13/viper"
 )
 
 type clientRedis struct {
@@ -14,25 +18,45 @@ type clientRedis struct {
 }
 
 // Init .
-func (client *clientRedis) Init(serverConfigList []ServerConfig) error {
+func (client *clientRedis) Init() (err error) {
 
-	if len(serverConfigList) == 0 {
-		return fmt.Errorf("sever config is empty")
+	serverConfig := &ServerConfig{
+		Host: viper.GetString("redis_host"),
+		Port: viper.GetInt("redis_port"),
 	}
 
 	client.ctx = context.Background()
 
 	options := &redis.Options{}
-	serverConfig := serverConfigList[0]
 
 	options.Addr = fmt.Sprintf("%s:%d", serverConfig.Host, serverConfig.Port)
 	options.Password = serverConfig.Password
 
 	client.client = redis.NewClient(options)
-
 	statusCmd := client.client.Ping(client.ctx)
+	err = statusCmd.Err()
 
-	return statusCmd.Err()
+	retry := 0
+
+	if err != nil {
+		glog.Errorln(err)
+
+		for err != nil {
+			if retry >= RetryLimit {
+				return errors.New("over retry to connect to redis")
+			}
+			retry++
+			glog.Infof("retry to connect to redis[%d]", retry)
+			statusCmd = client.client.Ping(client.ctx)
+			err = statusCmd.Err()
+			if err != nil {
+				glog.Errorln(err)
+				time.Sleep(time.Second)
+			}
+		}
+	}
+
+	return
 }
 
 // Set .
@@ -51,19 +75,4 @@ func (client *clientRedis) Get(key string, value interface{}) error {
 func (client *clientRedis) Delete(key string) error {
 	statusCmd := client.client.Del(context.Background(), key)
 	return statusCmd.Err()
-}
-
-// Push .
-func (client *clientRedis) Push(key string, values ...interface{}) error {
-	return nil
-}
-
-// Pop .
-func (client *clientRedis) Pop(key string, value interface{}) error {
-	return nil
-}
-
-// PopAll .
-func (client *clientRedis) PopAll(key string, value interface{}) error {
-	return nil
 }
