@@ -29,3 +29,7 @@ func (client *clientBase) Get(key string, value interface{}) error {
 func (client *clientBase) Delete(key string) error {
 	return nil
 }
+
+func (client *clientBase) IsNotFound(err error) bool {
+	return false
+}
