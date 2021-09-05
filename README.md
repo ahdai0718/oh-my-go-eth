@@ -24,14 +24,31 @@ My first Go ETH service.
 
   - [Install docker compose](https://docs.docker.com/compose/install/)
 
-  - Run
+  - Environment variables
+    ```
+    // Ethereum node
+    // (default Ethereum node via docker at localhost)
+    // if you have any other node
+    // you can replace it
+
+    ETH_SERVICE_ETH_DATA_SEED_URL=http://localhost:8545
+    ```
+
+    Then
+
     ```
     // environment variables for docker
-    cp env-example .env
 
-    // up service
-    docker compose up eth-service
+    cp env-example .env
     ```
+
+  - Run
+    ```
+    // up services
+    docker compose up eth-scanner eth-service
+    ```
+
+
 
 ## What you got
 
@@ -39,21 +56,36 @@ My first Go ETH service.
 
   - RPC endpoint `http://localhost:8545`
 
-- Swagger APIs Explorer With 3 APIs
+- Redis Server
 
-  - Default url [http://localhost:40001/swagger/index.html](http://localhost:40001/swagger/index.html)
+  - For service cache
 
-- ETH block scanner on boot
+- MySQL Server
 
-  - [scanner.go](https://github.com/ahdai0718/oh-my-go-eth/blob/master/internal/app/server/eth/scanner.go)
+  - Store ETH block、transaction、log...etc
+
+  - Schema
+
+    - [eth_service.sql](https://github.com/ahdai0718/oh-my-go-eth/blob/master/deployments/mysql/sql/eth_service.sql)
+
+- ETH block scanner
 
   - scan N (default:20) ETH blocks per second
 
-- MySQL schema
+- API service
 
-  - [eth_service.sql](https://github.com/ahdai0718/oh-my-go-eth/blob/master/deployments/mysql/sql/eth_service.sql)
+  - `/api/v1/eth/blocks?limit=n` - get (N) blocks
 
+  - `/api/v1/eth/blocks/{id}` - get single block with specific id
+
+  - `/api/v1/eth/transaction/{tx_hash}` - get single transaction with tx hash
+
+- Swagger APIs Explorer
+
+  - Default url [http://localhost:40001/swagger/index.html](http://localhost:40001/swagger/index.html)
 
 ## Todos
 
 - performance tuning
+
+- handle fork
