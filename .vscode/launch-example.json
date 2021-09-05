@@ -3,13 +3,32 @@
     "compounds": [],
     "configurations": [
         {
+            "name": "eth-scanner",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "cwd": "${workspaceFolder}/cmd/scanner/",
+            "output": "${workspaceFolder}/cmd/scanner/__debug_bin_go_eth_scanner",
+            "program": "${workspaceFolder}/cmd/scanner/main.go",
+            "args": [
+                "--stderrthreshold", "INFO",
+                "--run_mode", "dev",
+                "--database_host", "localhost",
+                "--database_port", "3306",
+                "--database_schema", "eth_service",
+                "--database_username", "root",
+                "--database_password", "!QAZ2wsx",
+                "--eth_data_seed_url", "http://localhost:8545/",
+            ],
+        },
+        {
             "name": "eth-service",
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "cwd": "${workspaceFolder}/cmd/server/eth/",
-            "output": "${workspaceFolder}/cmd/server/eth/__debug_bin_go_eth",
-            "program": "${workspaceFolder}/cmd/server/eth/main.go",
+            "cwd": "${workspaceFolder}/cmd/service/",
+            "output": "${workspaceFolder}/cmd/service/__debug_bin_go_eth_service",
+            "program": "${workspaceFolder}/cmd/service/main.go",
             "args": [
                 "--stderrthreshold", "INFO",
                 "--run_mode", "dev",
@@ -28,7 +47,7 @@
             "type": "chrome",
             "request": "launch",
             "name": "swagger-client",
-            "url": "http://0.0.0.0:40001/swagger/",
+            "url": "http://localhost:40001/swagger/",
             "webRoot": "${workspaceFolder}"
           },
     ]
