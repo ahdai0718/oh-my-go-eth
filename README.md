@@ -54,11 +54,15 @@ My first Go ETH service.
 
 - Ethereum node
 
-  - RPC endpoint `http://localhost:8545`
+  - For scanning ethererum data
+
+  - Default RPC endpoint `http://localhost:8545`
 
 - Redis Server
 
-  - For service cache
+  - For service data cache
+
+  - Recommend [AnotherRedisDesktopManager](https://github.com/qishibo/AnotherRedisDesktopManager) to check redis data
 
 - MySQL Server
 

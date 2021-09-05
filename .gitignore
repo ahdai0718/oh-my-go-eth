@@ -1,3 +1,4 @@
 .env
-__debug_bin_go_eth
 launch.json
+__debug_bin_go_eth_scanner
+__debug_bin_go_eth_service

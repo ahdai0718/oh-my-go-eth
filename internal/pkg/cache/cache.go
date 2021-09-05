@@ -5,8 +5,7 @@ import (
 )
 
 const (
-	ERROR_REDIS_NO_DATA = "redis: nil"
-	RetryLimit          = 60
+	RetryLimit = 60
 )
 
 // ServerConfig ...
@@ -24,4 +23,5 @@ type Client interface {
 	SetWithExpiration(expiration time.Duration, key string, value interface{}) error
 	Get(key string, value interface{}) error
 	Delete(key string) error
+	IsNotFound(err error) bool
 }

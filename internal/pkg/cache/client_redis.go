@@ -11,6 +11,10 @@ import (
 	"github.com/spf13/viper"
 )
 
+var (
+	ErrorRedisNoData = redis.Nil
+)
+
 type clientRedis struct {
 	clientBase
 	ctx    context.Context
@@ -75,4 +79,8 @@ func (client *clientRedis) Get(key string, value interface{}) error {
 func (client *clientRedis) Delete(key string) error {
 	statusCmd := client.client.Del(context.Background(), key)
 	return statusCmd.Err()
+}
+
+func (client *clientRedis) IsNotFound(err error) bool {
+	return err == ErrorRedisNoData
 }
