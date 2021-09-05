@@ -1,9 +1,9 @@
-package eth
+package service
 
 import (
 	"net/http"
 
-	"github.com/ahdai0718/oh-my-go-eth/internal/app/server/eth/store"
+	"github.com/ahdai0718/oh-my-go-eth/internal/pkg/store"
 	"github.com/gin-gonic/gin"
 	"github.com/golang/glog"
 )
