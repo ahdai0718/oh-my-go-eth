@@ -30,7 +30,8 @@ CREATE TABLE `block` (
   `block_time` bigint NOT NULL,
   `parent_hash` char(66) NOT NULL,
   PRIMARY KEY (`block_hash`),
-  KEY `block_num` (`block_num`)
+  KEY `block_num` (`block_num`),
+  KEY `parent_hash` (`parent_hash`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
