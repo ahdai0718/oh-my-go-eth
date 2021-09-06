@@ -7,7 +7,8 @@ message Block {
     string block_hash = 2;
     int64 block_time = 3;
     string parent_hash = 4;
-    repeated Transaction transactions = 5;
+    bool is_stable = 5;
+    repeated Transaction transactions = 6;
 }
 
 message Transaction {
